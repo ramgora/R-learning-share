@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: learning_share_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rui19991102
+      POSTGRES_DB: learning_share
+    volumes:
+      - learning_share_pgdata:/var/lib/postgresql/data
+
+volumes:
+  learning_share_pgdata:
