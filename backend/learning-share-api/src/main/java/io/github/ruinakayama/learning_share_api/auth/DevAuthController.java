@@ -12,6 +12,7 @@ public class DevAuthController {
 
   @PostMapping("/dev-login")
   public ResponseEntity<?> devLogin(HttpSession session) {
+    // セッションに値をセット
     session.setAttribute("USER_ID", 1L);
     return ResponseEntity.ok(Map.of("message", "dev login ok", "userId", 1));
   }
@@ -19,8 +20,9 @@ public class DevAuthController {
   @GetMapping("/me")
   public ResponseEntity<?> me(HttpSession session) {
     Long userId = (Long) session.getAttribute("USER_ID");
-    if (userId == null)
+    if (userId == null) {
       return ResponseEntity.status(401).body(Map.of("message", "unauthorized"));
+    }
     return ResponseEntity.ok(Map.of("userId", userId));
   }
 
