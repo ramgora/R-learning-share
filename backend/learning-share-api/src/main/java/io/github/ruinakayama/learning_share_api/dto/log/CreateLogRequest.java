@@ -27,5 +27,5 @@ public record CreateLogRequest(
 
     List<String> tags,
 
-    @NotBlank String visibility) {
+    @NotNull Visibility visibility) {
 }
