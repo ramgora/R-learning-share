@@ -39,6 +39,7 @@ public class LearningLogController {
       throw new UnauthorizedException("login required");
     }
     CreateLogResponse res = learningLogService.create(userId, req);
-    return ResponseEntity.ok(res);
+    return ResponseEntity.status(201).body(res);
+
   }
 }
