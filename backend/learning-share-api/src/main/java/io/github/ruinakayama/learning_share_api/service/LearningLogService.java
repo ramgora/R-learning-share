@@ -11,4 +11,6 @@ import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
 
 public interface LearningLogService {
   CreateLogResponse create(Long userId, CreateLogRequest req);
+
+  CreateLogResponse getByShareToken(String token);
 }

@@ -9,6 +9,7 @@ import io.github.ruinakayama.learning_share_api.domain.LearningLogEntity;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.Visibility;
+import io.github.ruinakayama.learning_share_api.exception.NotFoundException;
 import io.github.ruinakayama.learning_share_api.repository.LearningLogRepository;
 
 @Service
@@ -36,7 +37,7 @@ public class LearningLogServiceImpl implements LearningLogService {
     entity.setTitle(req.title());
     entity.setContent(req.content());
     entity.setMinutes(req.minutes());
-    entity.setVisibility(req.visibility()); // enum想定（req.visibility()がenumなら）
+    entity.setVisibility(req.visibility());
     entity.setShareToken(shareToken);
     entity.setCreatedAt(now);
     entity.setUpdatedAt(now);
@@ -57,5 +58,19 @@ public class LearningLogServiceImpl implements LearningLogService {
         saved.getVisibility(),
         saved.getCreatedAt(),
         saved.getUpdatedAt());
+  }
+
+  @Override
+  public CreateLogResponse getByShareToken(String token) {
+    LearningLogEntity entity = learningLogRepository.findByShareToken(token)
+        .orElseThrow(() -> new NotFoundException("log not found"));
+
+    return new CreateLogResponse(
+        entity.getId(),
+        entity.getSlug(),
+        entity.getShareToken(),
+        entity.getVisibility(),
+        entity.getCreatedAt(),
+        entity.getUpdatedAt());
   }
 }

@@ -40,6 +40,5 @@ public class LearningLogController {
     }
     CreateLogResponse res = learningLogService.create(userId, req);
     return ResponseEntity.status(201).body(res);
-
   }
 }
