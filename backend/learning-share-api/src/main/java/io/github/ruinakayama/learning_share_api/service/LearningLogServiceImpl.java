@@ -53,6 +53,9 @@ public class LearningLogServiceImpl implements LearningLogService {
 
     return new CreateLogResponse(
         saved.getId(),
+        saved.getTitle(),
+        saved.getContent(),
+        saved.getMinutes(),
         saved.getSlug(),
         saved.getShareToken(),
         saved.getVisibility(),
@@ -67,6 +70,9 @@ public class LearningLogServiceImpl implements LearningLogService {
 
     return new CreateLogResponse(
         entity.getId(),
+        entity.getTitle(),
+        entity.getContent(),
+        entity.getMinutes(),
         entity.getSlug(),
         entity.getShareToken(),
         entity.getVisibility(),
