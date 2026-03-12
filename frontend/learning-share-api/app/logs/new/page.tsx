@@ -144,6 +144,7 @@ export default function NewPageLog() {
               </div>
             </div>
             <div className="grid gap-2">
+              {/* バックエンドでタグの処理は未実装 */}
               <label className="text-sm font-medium foreground">タグ</label>
               <input
                 value={tagText}
@@ -180,6 +181,26 @@ export default function NewPageLog() {
               >
                 {loading ? "送信中..." : "作成"}
               </button>
+            </div>
+            <div>
+              {result && (
+                <div className="mt-6 rounded-xl border p-4">
+                  <p>作成できました</p>
+
+                  {result.shareToken && (
+                    <p>
+                      シェアURL: http://localhost:3000/share/{result.shareToken}
+                    </p>
+                  )}
+
+                  {result.slug && (
+                    <p>
+                      公開URL: http://localhost:3000/u/username/logs/
+                      {result.slug}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
