@@ -11,6 +11,7 @@ import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.Visibility;
 import io.github.ruinakayama.learning_share_api.exception.NotFoundException;
 import io.github.ruinakayama.learning_share_api.repository.LearningLogRepository;
+import io.github.ruinakayama.learning_share_api.exception.BadRequestException;
 
 @Service
 public class LearningLogServiceImpl implements LearningLogService {
@@ -21,17 +22,37 @@ public class LearningLogServiceImpl implements LearningLogService {
     this.learningLogRepository = learningLogRepository;
   }
 
+  private void validateCreateRequest(CreateLogRequest req) {
+    if (req.title() == null || req.title().isBlank()) {
+      throw new BadRequestException("title is required");
+    }
+    if (req.minutes() == null) {
+      throw new BadRequestException("minutes is required");
+    }
+    if (req.minutes() < 0) {
+      throw new BadRequestException("minutes must be greater than or equal to 0");
+    }
+
+    if (req.visibility() == null) {
+      throw new BadRequestException("visibility is required");
+    }
+  }
+
+  // 学習ログ作成処理
   @Override
   public CreateLogResponse create(Long userId, CreateLogRequest req) {
-    OffsetDateTime now = OffsetDateTime.now();
+    // バリデーションチェック
+    validateCreateRequest(req);
 
+    // 作成日時
+    OffsetDateTime now = OffsetDateTime.now();
     // visibilityがLINK/PUBLICのときだけtoken発行（仕様）
     String shareToken = switch (req.visibility()) {
       case LINK, PUBLIC -> UUID.randomUUID().toString();
       case PRIVATE -> null;
     };
 
-    // 1) まず保存（id確定させる）
+    // 1) まず1回目の保存（id確定させる）
     LearningLogEntity entity = new LearningLogEntity();
     entity.setUserId(userId);
     entity.setTitle(req.title());
@@ -45,7 +66,7 @@ public class LearningLogServiceImpl implements LearningLogService {
     LearningLogEntity saved = learningLogRepository.save(entity);
 
     // 2) slugはPUBLICだけ必要。最短でslug = id文字列
-    if (saved.getVisibility() == Visibility.PUBLIC) {
+    if (entity.getVisibility() == Visibility.PUBLIC) {
       saved.setSlug(saved.getId().toString());
       saved.setUpdatedAt(OffsetDateTime.now());
       saved = learningLogRepository.save(saved);

@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.github.ruinakayama.learning_share_api.exception.BadRequestException;
 import io.github.ruinakayama.learning_share_api.exception.NotFoundException;
 import io.github.ruinakayama.learning_share_api.exception.UnauthorizedException;
 
@@ -22,6 +23,12 @@ public class ApiExceptionHandler {
     public static ErrorResponse simple(String error, String message) {
       return new ErrorResponse(error, message, null);
     }
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ErrorResponse.simple("BAD_REQUEST", e.getMessage()));
   }
 
   @ExceptionHandler(UnauthorizedException.class)

@@ -19,6 +19,12 @@ interface CreateLogResponse {
   createdAt?: string;
 }
 
+interface ValidationErrors {
+  title?: string;
+  content?: string;
+  minutes?: string;
+}
+
 type Visibility = "PRIVATE" | "LINK" | "PUBLIC";
 
 const API_BASE = "http://localhost:8080/api";
@@ -32,6 +38,7 @@ export default function NewPageLog() {
   const [result, setResult] = useState<CreateLogResponse | null>(null);
 
   const [error, setError] = useState<string | null>(null);
+  const [validErrors, setValidErrors] = useState<ValidationErrors>({});
   const [loading, setLoading] = useState(false);
 
   const tags = useMemo(() => {
@@ -41,7 +48,35 @@ export default function NewPageLog() {
       .filter(Boolean);
   }, [tagText]);
 
+  // バリデーション処理
+  const validate = (): ValidationErrors => {
+    const newErrors: ValidationErrors = {};
+    if (!title.trim()) {
+      newErrors.title = "入力必須項目です。";
+    }
+    if (!content.trim()) {
+      newErrors.content = "内容は必須入力項目です。";
+    }
+    if (minutes === undefined || minutes === null || isNaN(minutes)) {
+      newErrors.minutes = "学習時間は必須です。";
+    } else if (minutes < 0 || minutes > 1440) {
+      newErrors.minutes = "学習時間は0以上1440以下で入力してください。";
+    }
+    return newErrors;
+  };
+
   const onSubmit = async () => {
+    setError(null);
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setValidErrors(validationErrors);
+      return;
+    }
+
+    setValidErrors({});
+    setLoading(true);
+
     const createLogRequest: CreateLogRequest = {
       title: title.trim(),
       content: content.trim(),
@@ -58,6 +93,7 @@ export default function NewPageLog() {
       });
       const data = await res.json();
       if (!res.ok) {
+        setError(data.message ?? "作成に失敗しました。");
         return;
       }
       setResult(data);
@@ -92,11 +128,24 @@ export default function NewPageLog() {
             </div>
             <input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="h-11 rounded-xl border border-border/60 bg-background px-4 text-sm outline-none
-                         focus:border-border focus:ring-2 focus:ring-ring/20"
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (validErrors.title) {
+                  setValidErrors((prev) => ({ ...prev, title: undefined }));
+                }
+              }}
+              className={`h-11 rounded-xl border bg-background px-4 text-sm outline-none
+                  focus:ring-2 focus:ring-ring/20
+                  ${
+                    validErrors.title
+                      ? "border-red-400 focus:border-red-400"
+                      : "border-border/60 focus:border-border"
+                  }`}
               placeholder="タイトルを入力してください。"
             />
+            {validErrors.title && (
+              <p className="text-xs text-red-500 mt-1">{validErrors.title}</p>
+            )}
 
             <div className="grid gap-2">
               <label className="text-sm font-medium text-foreground">
@@ -106,10 +155,27 @@ export default function NewPageLog() {
                 value={content}
                 onChange={(e) => {
                   setContent(e.target.value);
+                  if (validErrors.content) {
+                    setValidErrors((prev) => ({
+                      ...prev,
+                      contents: undefined,
+                    }));
+                  }
                 }}
-                className="min-h-[160px] rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-border focus:ring-2 focus:ring-ring/20"
+                className={`min-h-40 rounded-xl border bg-background px-4 py-3 text-sm outline-none
+                  focus:ring-2 focus:ring-ring/20
+                  ${
+                    validErrors.content
+                      ? "border-red-400 focus:border-red-400"
+                      : "border-border/60 focus:border-border"
+                  }`}
                 placeholder="今日やったこと、気づき、詰まった点など…"
               />
+              {validErrors.content && (
+                <p className="text-xs text-red-500 mt-1">
+                  {validErrors.content}
+                </p>
+              )}
             </div>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div className="grid gap-2">
@@ -120,12 +186,31 @@ export default function NewPageLog() {
                 <input
                   type="number"
                   inputMode="numeric"
-                  value={minutes}
-                  onChange={(e) => setMinutes(Number(e.target.value))}
-                  className="h-11 rounded-xl border border-border/60 bg-background px-4 text-sm outline-none
-                           focus:border-border focus:ring-2 focus:ring-ring/20"
+                  value={minutes ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setMinutes(value === "" ? undefined : Number(value));
+                    if (validErrors.minutes) {
+                      setValidErrors((prev) => ({
+                        ...prev,
+                        minutes: undefined,
+                      }));
+                    }
+                  }}
+                  className={`h-11 rounded-xl border bg-background px-4 text-sm outline-none
+                    focus:ring-2 focus:ring-ring/20
+                    ${
+                      validErrors.minutes
+                        ? "border-red-400 focus:border-red-400"
+                        : "border-border/60 focus:border-border"
+                    }`}
                   max={1000}
                 />
+                {validErrors.minutes && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {validErrors.minutes}
+                  </p>
+                )}
               </div>
               <div className="grid gap-2">
                 <label className="text-sm font-medium text-foreground">
@@ -206,7 +291,6 @@ export default function NewPageLog() {
         </div>
         {/* エラー画面は別の画面で実装したい */}
         {error && <div>エラ</div>}
-        {result && <div>作成できました</div>}
       </div>
     </>
   );
