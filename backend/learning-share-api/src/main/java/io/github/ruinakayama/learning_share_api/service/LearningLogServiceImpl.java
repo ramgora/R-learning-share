@@ -1,6 +1,7 @@
 package io.github.ruinakayama.learning_share_api.service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import io.github.ruinakayama.learning_share_api.domain.LearningLogEntity;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.Visibility;
 import io.github.ruinakayama.learning_share_api.exception.NotFoundException;
 import io.github.ruinakayama.learning_share_api.repository.LearningLogRepository;
@@ -15,6 +17,9 @@ import io.github.ruinakayama.learning_share_api.exception.BadRequestException;
 
 @Service
 public class LearningLogServiceImpl implements LearningLogService {
+
+  // 一覧に表示する際の内容の出力文字数
+  private static final int CONTENT_PREVIEW_LENGTH = 60;
 
   private final LearningLogRepository learningLogRepository;
 
@@ -89,6 +94,11 @@ public class LearningLogServiceImpl implements LearningLogService {
     LearningLogEntity entity = learningLogRepository.findByShareToken(token)
         .orElseThrow(() -> new NotFoundException("log not found"));
 
+    // 万が一PRIVATEの場合でもtokenが入ってしまった場合のガード
+    if (entity.getVisibility() == Visibility.PRIVATE) {
+      throw new NotFoundException("log not found");
+    }
+
     return new CreateLogResponse(
         entity.getId(),
         entity.getTitle(),
@@ -99,5 +109,45 @@ public class LearningLogServiceImpl implements LearningLogService {
         entity.getVisibility(),
         entity.getCreatedAt(),
         entity.getUpdatedAt());
+  }
+
+  /* 学習ログ一覧取得処理 */
+  @Override
+  public List<LogSummaryResponse> getMyLogs(Long userId) {
+    // 学習ログの取得
+    List<LearningLogEntity> logs = learningLogRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+    // 取得した Entity 一覧を、APIレスポンス用の DTO 一覧へ変換して返す
+    return logs.stream()
+        // 各 Entity を 1件ずつ LogSummaryResponse に変換する
+        .map(this::toLogSummaryResponse)
+        // Stream の結果を List にまとめる
+        .toList();
+  }
+
+  // Entity を一覧表示用DTOに変換する
+  private LogSummaryResponse toLogSummaryResponse(LearningLogEntity entity) {
+    return new LogSummaryResponse(
+        entity.getId(),
+        entity.getTitle(),
+        entity.getVisibility(),
+        buildContentPreview(entity.getContent()),
+        entity.getMinutes(),
+        entity.getSlug(),
+        entity.getCreatedAt(),
+        entity.getUpdatedAt());
+  }
+
+  // 一覧カード表示用に、本文整形処理
+  private String buildContentPreview(String content) {
+    if (content == null) {
+      return "";
+    }
+    // 指定文字数以内ならそのまま返す
+    if (content.length() <= CONTENT_PREVIEW_LENGTH) {
+      return content;
+    }
+    // 指定文字数を超える場合は、省略記号をつけて返す
+    return content.substring(0, CONTENT_PREVIEW_LENGTH) + "...";
   }
 }
