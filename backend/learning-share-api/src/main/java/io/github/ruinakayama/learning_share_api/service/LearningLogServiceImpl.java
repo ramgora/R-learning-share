@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import io.github.ruinakayama.learning_share_api.domain.LearningLogEntity;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.LogDetailResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.Visibility;
 import io.github.ruinakayama.learning_share_api.exception.NotFoundException;
@@ -149,5 +150,26 @@ public class LearningLogServiceImpl implements LearningLogService {
     }
     // 指定文字数を超える場合は、省略記号をつけて返す
     return content.substring(0, CONTENT_PREVIEW_LENGTH) + "...";
+  }
+
+  @Override
+  public LogDetailResponse getLogDetail(Long userId, Long logId) {
+
+    LearningLogEntity log = learningLogRepository.findById(logId)
+        .orElseThrow(() -> new NotFoundException("log not found"));
+    if (!log.getUserId().equals(userId)) {
+      throw new NotFoundException("log not found");
+    }
+
+    return new LogDetailResponse(
+        log.getId(),
+        log.getTitle(),
+        log.getContent(),
+        log.getMinutes(),
+        log.getVisibility(),
+        log.getSlug(),
+        log.getShareToken(),
+        log.getCreatedAt(),
+        log.getUpdatedAt());
   }
 }

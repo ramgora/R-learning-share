@@ -24,4 +24,3 @@ export async function serverFetch(
     cache: options.cache ?? "no-store",
   });
 }
-

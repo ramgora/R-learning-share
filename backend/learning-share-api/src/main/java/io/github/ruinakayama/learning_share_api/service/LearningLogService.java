@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.LogDetailResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
 
 public interface LearningLogService {
@@ -16,4 +17,7 @@ public interface LearningLogService {
 
   // ログイン中ユーザー自身の学習ログ一覧を取得する
   List<LogSummaryResponse> getMyLogs(Long userId);
+
+  // 学習ログ詳細画面を取得する
+  LogDetailResponse getLogDetail(Long userId, Long logId);
 }
