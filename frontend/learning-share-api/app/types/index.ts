@@ -29,3 +29,15 @@ export interface ShareLogResponse {
   shareToken?: string | null;
   slug?: string | null;
 }
+
+export interface LogSummary {
+  id: number;
+  title: string;
+  visibility: Visibility;
+  contentPreview: string;
+  minutes: number;
+  slug: string | null;
+  createdAt: string;
+  updatedAt: string;
+  tags?: string[];
+}

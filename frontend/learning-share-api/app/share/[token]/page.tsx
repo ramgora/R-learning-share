@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { ShareLogResponse } from "@/app/types";
+import { formatDate } from "@/lib/utils/formatDate";
+import { serverFetch } from "@/lib/api/serverFetch";
 
 type PageProps = {
   params: Promise<{
@@ -7,22 +9,8 @@ type PageProps = {
   }>;
 };
 
-const API_BASE = "http://localhost:8080/api";
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
 const getLog = async (token: string): Promise<ShareLogResponse> => {
-  const res = await fetch(`${API_BASE}/share/${token}`, {
+  const res = await serverFetch(`/share/${token}`, {
     cache: "no-store", // キャッシュに頼らず毎回取りに行く
   });
   if (res.status === 404) {
@@ -69,7 +57,7 @@ export default async function GetShareLogsPage({ params }: PageProps) {
           </header>
           <section>
             <h2 className="mb-3 text-sm font-semibold text-slate-500">内容</h2>
-            <div className="whitespace-pre-wrap break-words rounded-xl bg-slate-50 p-4 leading-7 text-slate-800">
+            <div className="whitespace-pre-wrap wrap-break-word rounded-xl bg-slate-50 p-4 leading-7 text-slate-800">
               {log.content || "内容はありません"}
             </div>
           </section>

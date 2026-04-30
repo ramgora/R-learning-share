@@ -1,12 +1,11 @@
 "use client";
 import { useState } from "react";
+import { clientFetch } from "@/lib/api/clientFetch";
 
 type LoginResponse = {
   message?: string;
   userId?: number;
 };
-
-const API_BASE = "http://localhost:8080/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,9 +16,8 @@ export default function LoginPage() {
     e.preventDefault();
     setMessage("");
     try {
-      const res = await fetch(`${API_BASE}/auth/dev-login`, {
+      const res = await clientFetch("/auth/dev-login", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { clientFetch } from "@/lib/api/clientFetch";
 
 interface CreateLogRequest {
   title: string;
@@ -26,8 +27,6 @@ interface ValidationErrors {
 }
 
 type Visibility = "PRIVATE" | "LINK" | "PUBLIC";
-
-const API_BASE = "http://localhost:8080/api";
 
 export default function NewPageLog() {
   const [title, setTitle] = useState("");
@@ -85,9 +84,8 @@ export default function NewPageLog() {
       tags,
     };
     try {
-      const res = await fetch(`${API_BASE}/logs`, {
+      const res = await clientFetch("/logs", {
         method: "POST",
-        credentials: "include", // Cookie session,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(createLogRequest), // JSON形式に変換
       });

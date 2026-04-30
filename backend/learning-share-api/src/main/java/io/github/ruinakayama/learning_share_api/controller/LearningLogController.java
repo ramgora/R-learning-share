@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.LogDetailResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
 import io.github.ruinakayama.learning_share_api.exception.UnauthorizedException;
 import io.github.ruinakayama.learning_share_api.service.LearningLogService;
@@ -59,6 +61,15 @@ public class LearningLogController {
     List<LogSummaryResponse> res = learningLogService.getMyLogs(userId);
     // 一覧取得成功なので 200 OK を返す
     return ResponseEntity.ok(res);
+  }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<LogDetailResponse> getLogDetail(HttpSession session, @PathVariable Long id) {
+    Long userId = (Long) session.getAttribute("USER_ID");
+    if (userId == null) {
+      throw new UnauthorizedException("login required");
+    }
+    LogDetailResponse res = learningLogService.getLogDetail(userId, id);
+    return ResponseEntity.ok(res);
   }
 }
