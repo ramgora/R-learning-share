@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LogSummary } from "@/app/types";
+import { formatDate } from "@/lib/utils/formatDate";
 
 type Props = {
   log: LogSummary;
@@ -23,7 +24,9 @@ export default function LogCard({ log }: Props) {
               <span>{log.minutes}分</span>
             </div>
           </div>
-          <span className="text-xs text-slate-400">{log.updatedAt}</span>
+          <span className="text-xs text-slate-400">
+            {formatDate(log.updatedAt)}
+          </span>
         </div>
         <p className="mt-4 text-sm leading-7 text-slate-600">
           {log.contentPreview}

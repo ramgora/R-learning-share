@@ -26,19 +26,16 @@ const getLog = async (token: string): Promise<ShareLogResponse> => {
 export default async function GetShareLogsPage({ params }: PageProps) {
   const { token } = await params;
   const log = await getLog(token);
-  console.log("title", log.title);
-  console.log("log", log);
   return (
-    <>
-      <main>
-        <div className="mx-auto max-w-3xl">
+    <main>
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <article className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-8">
             <span className="inline-flex rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600">
               Shared Learning Log
             </span>
           </div>
-        </div>
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
           <header className="mb-6 border-b border-slate-100 pb-6">
             <h1 className="mb-4 text-3xl font-bold tracking-tight">
               {log.title}
@@ -61,7 +58,7 @@ export default async function GetShareLogsPage({ params }: PageProps) {
               {log.content || "内容はありません"}
             </div>
           </section>
-          <section>
+          <section className="mt-6">
             {log?.tags?.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {log.tags.map((tag) => (
@@ -73,7 +70,7 @@ export default async function GetShareLogsPage({ params }: PageProps) {
             )}
           </section>
         </article>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }
