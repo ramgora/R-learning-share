@@ -11,6 +11,7 @@ import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogDetailResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.UpdateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.Visibility;
 import io.github.ruinakayama.learning_share_api.exception.NotFoundException;
 import io.github.ruinakayama.learning_share_api.repository.LearningLogRepository;
@@ -171,5 +172,77 @@ public class LearningLogServiceImpl implements LearningLogService {
         log.getShareToken(),
         log.getCreatedAt(),
         log.getUpdatedAt());
+  }
+
+  /* 学習ログ更新処理 */
+
+  @Override
+  public CreateLogResponse update(Long userId, Long logId, UpdateLogRequest req) {
+
+    LearningLogEntity log = learningLogRepository.findById(logId)
+        .orElseThrow(() -> new NotFoundException("log not found"));
+
+    // 自身のログであるかチェック
+    if (!log.getUserId().equals(userId)) {
+      throw new NotFoundException("log not found");
+    }
+
+    log.setTitle(req.title());
+    log.setContent(req.content());
+    log.setMinutes(req.minutes());
+    log.setVisibility(req.visibility());
+    // log.setTags(req.tags()); タグに関しては今後実装予定
+
+    applyVisibilityRules(log, req.visibility());
+
+    LearningLogEntity updated = learningLogRepository.save(log);
+
+    return new CreateLogResponse(
+        updated.getId(),
+        updated.getTitle(),
+        updated.getContent(),
+        updated.getMinutes(),
+        updated.getSlug(),
+        updated.getShareToken(),
+        updated.getVisibility(),
+        updated.getCreatedAt(),
+        updated.getUpdatedAt());
+  }
+
+  private void applyVisibilityRules(LearningLogEntity log, Visibility visibility) {
+    switch (visibility) {
+      case PRIVATE -> {
+        log.setShareToken(null);
+        log.setSlug(null);
+      }
+
+      case LINK -> {
+        if (log.getShareToken() == null) {
+          log.setShareToken(UUID.randomUUID().toString());
+        }
+        log.setSlug(null);
+      }
+
+      case PUBLIC -> {
+        if (log.getShareToken() == null) {
+          log.setShareToken(UUID.randomUUID().toString());
+        }
+        if (log.getSlug() == null) {
+          log.setSlug(log.getId().toString());
+        }
+      }
+    }
+  }
+
+  /* 学習ログ削除処理 */
+
+  @Override
+  public void deleteLog(Long userId, Long logId) {
+    LearningLogEntity log = learningLogRepository.findById(logId)
+        .orElseThrow(() -> new NotFoundException("log not found"));
+    if (!log.getUserId().equals(userId)) {
+      throw new NotFoundException("log not found");
+    }
+    learningLogRepository.delete(log);
   }
 }
