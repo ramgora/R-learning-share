@@ -6,6 +6,7 @@ import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogDetailResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.UpdateLogRequest;
 
 public interface LearningLogService {
 
@@ -20,4 +21,10 @@ public interface LearningLogService {
 
   // 学習ログ詳細画面を取得する
   LogDetailResponse getLogDetail(Long userId, Long logId);
+
+  // 学習ログを更新する
+  CreateLogResponse update(Long userId, Long logId, UpdateLogRequest req);
+
+  // 学習ログを削除する
+  void deleteLog(Long userId, Long logId);
 }

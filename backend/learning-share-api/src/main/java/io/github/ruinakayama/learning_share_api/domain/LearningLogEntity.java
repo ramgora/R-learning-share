@@ -44,7 +44,6 @@ public class LearningLogEntity {
   @Column(name = "updated_at", nullable = false)
   private OffsetDateTime updatedAt;
 
-  // --- getter/setter（Lombok未使用前提で手書き） ---
   public Long getId() {
     return id;
   }

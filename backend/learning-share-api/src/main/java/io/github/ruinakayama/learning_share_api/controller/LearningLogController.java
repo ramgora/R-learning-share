@@ -3,7 +3,9 @@ package io.github.ruinakayama.learning_share_api.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import io.github.ruinakayama.learning_share_api.dto.log.CreateLogRequest;
 import io.github.ruinakayama.learning_share_api.dto.log.CreateLogResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogDetailResponse;
 import io.github.ruinakayama.learning_share_api.dto.log.LogSummaryResponse;
+import io.github.ruinakayama.learning_share_api.dto.log.UpdateLogRequest;
 import io.github.ruinakayama.learning_share_api.exception.UnauthorizedException;
 import io.github.ruinakayama.learning_share_api.service.LearningLogService;
 import jakarta.servlet.http.HttpSession;
@@ -71,5 +74,28 @@ public class LearningLogController {
     }
     LogDetailResponse res = learningLogService.getLogDetail(userId, id);
     return ResponseEntity.ok(res);
+  }
+
+  // ログ更新処理
+  @PatchMapping("/{id}")
+  public ResponseEntity<CreateLogResponse> updateLogs(@PathVariable Long id,
+      @Valid @RequestBody UpdateLogRequest req,
+      HttpSession session) {
+    Long userId = (Long) session.getAttribute("USER_ID");
+    if (userId == null) {
+      throw new UnauthorizedException("login required");
+    }
+    CreateLogResponse res = learningLogService.update(userId, id, req);
+    return ResponseEntity.ok(res);
+  }
+
+  // 学習ログ削除処理
+  @DeleteMapping("/{id}")
+  public void deleteLog(@PathVariable Long id, HttpSession session) {
+    Long userId = (Long) session.getAttribute("USER_ID");
+    if (userId == null) {
+      throw new UnauthorizedException("login required");
+    }
+    learningLogService.deleteLog(userId, id);
   }
 }
