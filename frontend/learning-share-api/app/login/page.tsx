@@ -37,7 +37,7 @@ export default function LoginPage() {
 
   return (
     <main>
-      <h1>ログイン</h1>
+      <h1>ログイン画面(改修予定)</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email">メールアドレス</label>

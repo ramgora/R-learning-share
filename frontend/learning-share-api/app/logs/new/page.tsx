@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { clientFetch } from "@/lib/api/clientFetch";
+import { useRouter } from "next/navigation";
 
 interface CreateLogRequest {
   title: string;
@@ -46,6 +47,8 @@ export default function NewPageLog() {
       .map((t) => t.trim())
       .filter(Boolean);
   }, [tagText]);
+
+  const router = useRouter();
 
   // バリデーション処理
   const validate = (): ValidationErrors => {
@@ -284,6 +287,13 @@ export default function NewPageLog() {
                   )}
                 </div>
               )}
+              <button
+                type="button"
+                onClick={() => router.push("/logs")}
+                className="mt-4 rounded-xl bg-blue-600 px-4 py-2 text-white"
+              >
+                一覧へ戻る
+              </button>
             </div>
           </div>
         </div>
