@@ -14,7 +14,7 @@ public class DevAuthController {
   public ResponseEntity<?> devLogin(HttpSession session) {
     // セッションに値をセット
     session.setAttribute("USER_ID", 1L);
-    return ResponseEntity.ok(Map.of("message", "dev login ok", "userId", 1));
+    return ResponseEntity.ok(Map.of("message", "ログイン成功しました", "userId", 1));
   }
 
   @GetMapping("/me")

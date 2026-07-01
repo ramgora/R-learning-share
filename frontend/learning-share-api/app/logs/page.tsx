@@ -1,3 +1,4 @@
+import { LogoutButton } from "@/components/common/LogoutButton";
 import { PageHeader } from "@/components/common/PageHeader";
 import LogCard from "@/components/logs/LogCard";
 import { getMyLogs } from "@/lib/api/logs";
@@ -24,12 +25,15 @@ export default async function LogsPage() {
         title="学習ログ"
         description="これまでの学習記録"
         action={
-          <Link
-            href="/logs/new"
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-          >
-            新規作成
-          </Link>
+          <>
+            <Link
+              href="/logs/new"
+              className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+            >
+              新規作成
+            </Link>
+            <LogoutButton />
+          </>
         }
       />
 
