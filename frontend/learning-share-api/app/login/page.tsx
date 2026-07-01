@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { clientFetch } from "@/lib/api/clientFetch";
+import { useRouter } from "next/navigation";
 
 type LoginResponse = {
   message?: string;
@@ -8,6 +9,7 @@ type LoginResponse = {
 };
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -29,6 +31,7 @@ export default function LoginPage() {
         return;
       }
       setMessage(data.message ?? "ログイン成功");
+      router.push("/logs");
     } catch (error) {
       console.error(error);
       setMessage("通信エラーが発生しました");
