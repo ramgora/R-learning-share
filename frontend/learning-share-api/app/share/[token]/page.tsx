@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { ShareLogResponse } from "@/app/types";
 import { formatDate } from "@/lib/utils/formatDate";
 import { serverFetch } from "@/lib/api/serverFetch";
@@ -30,6 +31,14 @@ export default async function GetShareLogsPage({ params }: PageProps) {
     <main>
       <div className="mx-auto max-w-3xl px-6 py-10">
         <article className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-6">
+            <Link
+              href="/logs"
+              className="inline-flex rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+            >
+              ← 戻る
+            </Link>
+          </div>
           <div className="mb-8">
             <span className="inline-flex rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600">
               Shared Learning Log
@@ -66,7 +75,7 @@ export default async function GetShareLogsPage({ params }: PageProps) {
                 ))}
               </div>
             ) : (
-              <span>ここにタグ表示させる予定</span>
+              <span></span>
             )}
           </section>
         </article>
