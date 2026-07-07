@@ -36,7 +36,7 @@ export default async function GetShareLogsPage({ params }: PageProps) {
               href="/logs"
               className="inline-flex rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
             >
-              ← 戻る
+              一覧へ戻る
             </Link>
           </div>
           <div className="mb-8">
