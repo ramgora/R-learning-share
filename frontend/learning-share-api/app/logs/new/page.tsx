@@ -281,7 +281,7 @@ export default function NewPageLog() {
 
                   {result.slug && (
                     <p>
-                      公開URL: http://localhost:3000/u/username/logs/
+                      公開URL: http://localhost:3000/logs/
                       {result.slug}
                     </p>
                   )}
